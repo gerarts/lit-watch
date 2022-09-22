@@ -1,0 +1,71 @@
+{
+  "name": "lit-watch",
+  "version": "0.2.0-alpha",
+  "description": "Create properties in LitElements that watch for updates in a redux store",
+  "main": "dist/createWatcher.js",
+  "types": "dist/createWatcher.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "ci:test": "npm-run-all -l build test:*",
+    "docs": "typedoc && touch docs/.nojekyll",
+    "prepare": "echo \"skipping npm-run-all -l build\"",
+    "test": "npm-run-all build test:*",
+    "test:mocha": "nyc mocha --require ts-node/register lib/**/*.test.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gerarts/lit-watch.git"
+  },
+  "keywords": [
+    "redux",
+    "watch",
+    "lit"
+  ],
+  "author": {
+    "name": "Paul Gerarts",
+    "email": "dev@gerarts.nl"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/gerarts/lit-watch/issues"
+  },
+  "homepage": "https://github.com/gerarts/lit-watch#readme",
+  "dependencies": {
+    "rxjs": "~7.5.0"
+  },
+  "devDependencies": {
+    "@reduxjs/toolkit": "^1.8.5",
+    "@types/chai": "^4.3.3",
+    "@types/mocha": "^9.1.1",
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0",
+    "npm-run-all": "^4.1.5",
+    "nyc": "^15.1.0",
+    "reselect": "^4.1.6",
+    "ts-node": "^10.9.1",
+    "typedoc": "^0.23.7",
+    "typescript": "~4.7.0"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "**/*.{ts,tsx,js,jsx}",
+      "!**/node_modules/**",
+      "!**/*.test.{ts,tsx,js,jsx}"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json"
+    ],
+    "roots": [
+      "<rootDir>/src"
+    ],
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    }
+  }
+}

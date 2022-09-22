@@ -1,0 +1,10 @@
+lib/
+tsconfig.json
+tslint.json
+docs/
+node_modules/
+*.test.*
+coverage/
+.nyc_output/
+.git/
+tsconfig.tsbuildinfo

@@ -5,22 +5,47 @@
 */
 import { from, ObservableInput, ObservedValueOf } from 'rxjs';
 
+/**
+ * Abstract version of a partial ReactiveElement
+ * 
+ * This is mostly for internal use by this package, but it can be used as a base-class when you want to receive updates
+ * in a non-HTMLElement type class.
+ * 
+ * Example
+ * 
+ * ```ts
+ * class MyClass extends Updatable {}
+ * ```
+ * 
+ * or
+ * 
+ * ```ts
+ * class MyClass extends SomeOtherClass implements Updatable {}
+ * ```
+ */
 export abstract class Updatable {
     public abstract connectedCallback(): void;
     public abstract disconnectedCallback(): void;
     public abstract requestUpdate(name?: PropertyKey, oldValue?: unknown): void;
 }
 
+/**
+ * Create constructable type
+ */
 export type Constructor<T> = new (...args: any[]) => T;
 
-// From the TC39 Decorators proposal
+/**
+ * From the TC39 Decorators proposal
+ */
 export interface ClassDescriptor {
     kind: 'class';
     elements: ClassElement[];
     finisher?: <T>(clazz: Constructor<T>) => void | Constructor<T>;
 }
 
-// From the TC39 Decorators proposal
+/**
+ * From the TC39 Decorators proposal
+ */
 export interface ClassElement {
     kind: 'field' | 'method';
     key: PropertyKey;
@@ -31,13 +56,24 @@ export interface ClassElement {
     descriptor?: PropertyDescriptor;
 }
 
-export type KeysMatchingForWrites<T, V> = { [K in keyof T]-?: V extends T[K] ? K : never }[keyof T];
+/**
+ * Get keys from T where type of T[key] = V
+ */
+export type KeysFromObjectForType<T, V> = { [K in keyof T]-?: V extends T[K] ? K : never }[keyof T];
 
+/**
+ * Create a decorator that updates a property when an Observable updates and notifies LitElement / ReactiveElement.
+ *
+ * @param observable - The Observable to watch for updates
+ * @returns - A decorator to create an updating property
+ */
 export function createWatcher<O extends ObservableInput<any>>(observable: O) {
+    // Decorator generator function - i.e. @decorator(options)
     return function watchDecoratorGenerator<F extends (value: ObservedValueOf<O>) => any>(selector?: F) {
+        // Decorator
         return function watchDecorator<T extends Updatable>(
             target: ClassElement | T,
-            propertyKey?: KeysMatchingForWrites<T, ReturnType<F>>,
+            propertyKey?: KeysFromObjectForType<T, ReturnType<F> | undefined>,
         ): any {
             // Create a subscibe / unsubscribe mechanism to send updates to individual components
             let subscribers: ((prev: ReturnType<F>) => void)[] = [];
@@ -85,13 +121,19 @@ export function createWatcher<O extends ObservableInput<any>>(observable: O) {
             const patchPrototypeWithWatcher = (prototype: Updatable, key: PropertyKey) => {
                 const subscriptionKey: unique symbol = Symbol();
 
-                Object.defineProperty(prototype, key, {
+                const configureSetter = (target: Updatable) => Object.defineProperty(target, key, {
                     configurable: false,
                     enumerable: true,
                     get(): ReturnType<F> {
+                        // Run thunk if one exists
+                        thunk?.();
+
                         return currentValue;
                     },
                 });
+
+                // Immediately try to configure property descriptor
+                configureSetter(prototype);
 
                 const connect = prototype.connectedCallback;
                 prototype.connectedCallback = function() {
@@ -101,8 +143,11 @@ export function createWatcher<O extends ObservableInput<any>>(observable: O) {
                     // Create reference to `this`
                     const ctx: Updatable & { [subscriptionKey]?: () => void } = this;
 
-                    // Run thunk if one exists
-                    thunk?.();
+                    // Dirty property descriptor protector
+                    if (typeof Object.getOwnPropertyDescriptor(ctx, key)?.get !== 'function') {
+                        // Repair property descriptor
+                        configureSetter(ctx);
+                    }
 
                     // Unsubscribe if an existing subscription exists
                     ctx[subscriptionKey]?.();
