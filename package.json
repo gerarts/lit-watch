@@ -1,6 +1,6 @@
 {
   "name": "lit-watch",
-  "version": "0.2.0-alpha",
+  "version": "0.2.0-alpha.2",
   "description": "Create properties in LitElements that watch for updates in a redux store",
   "main": "dist/createWatcher.js",
   "types": "dist/createWatcher.d.ts",
@@ -8,7 +8,7 @@
     "build": "tsc -p tsconfig.json",
     "ci:test": "npm-run-all -l build test:*",
     "docs": "typedoc && touch docs/.nojekyll",
-    "prepare": "echo \"skipping npm-run-all -l build\"",
+    "prepare": "npm-run-all -l build",
     "test": "npm-run-all build test:*",
     "test:mocha": "nyc mocha --require ts-node/register lib/**/*.test.ts"
   },
@@ -19,6 +19,9 @@
   "keywords": [
     "redux",
     "watch",
+    "observable",
+    "rxjs",
+    "reselect",
     "lit"
   ],
   "author": {
@@ -45,27 +48,5 @@
     "ts-node": "^10.9.1",
     "typedoc": "^0.23.7",
     "typescript": "~4.7.0"
-  },
-  "jest": {
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "**/*.{ts,tsx,js,jsx}",
-      "!**/node_modules/**",
-      "!**/*.test.{ts,tsx,js,jsx}"
-    ],
-    "moduleFileExtensions": [
-      "ts",
-      "tsx",
-      "js",
-      "jsx",
-      "json"
-    ],
-    "roots": [
-      "<rootDir>/src"
-    ],
-    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.tsx?$",
-    "transform": {
-      "^.+\\.tsx?$": "ts-jest"
-    }
   }
 }
