@@ -145,7 +145,7 @@ If you are planning on watching multiple observables, or maybe even multiple sto
 // @watchStore()
 export const watchStore = createWatcher(store);
 
-// @watchMousePosition()
+// @watchPrice()
 export const watchPrice = createWatcher(priceObservable);
 ```
 
