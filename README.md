@@ -16,6 +16,8 @@ npm i lit-watch
 You can create a decorator from any observable:
 
 ```ts
+import { createWatcher } from 'lit-watch';
+
 // Create a @watch decorator
 export const watch = createWatcher(observable);
 ```
@@ -23,7 +25,7 @@ export const watch = createWatcher(observable);
 Use it in your LitElements:
 
 ```ts
-import { html, LitElement } from 'lit-watch';
+import { html, LitElement } from 'lit';
 import { watch } from './watch';
 
 export class Account extends LitElement {
