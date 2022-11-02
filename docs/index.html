@@ -14,6 +14,100 @@
 <a href="#lit-watch" id="lit-watch" style="color: inherit; text-decoration: none;">
   <h1>lit-watch</h1>
 </a>
+<p><a href="https://github.com/gerarts/lit-watch/blob/master/LICENSE"><img src="https://img.shields.io/github/license/gerarts/lit-watch.svg" alt="MIT"></a>
+<a href="https://www.npmjs.com/package/lit-watch"><img src="https://img.shields.io/npm/v/lit-watch.svg" alt="NPM"></a></p>
+<p>Create decorators from redux stores and observables like RxJS objects.</p>
+
+<a href="#install" id="install" style="color: inherit; text-decoration: none;">
+  <h2>Install</h2>
+</a>
+<pre><code><span class="hl-0">npm</span><span class="hl-1"> </span><span class="hl-0">i</span><span class="hl-1"> </span><span class="hl-0">lit</span><span class="hl-1">-</span><span class="hl-0">watch</span>
+</code></pre>
+
+<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
+  <h2>Usage</h2>
+</a>
+<p>You can create a decorator from any observable:</p>
+<pre><code class="language-ts"><span class="hl-2">// Create a @watch decorator</span><br/><span class="hl-3">export</span><span class="hl-1"> </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">watch</span><span class="hl-1"> = </span><span class="hl-6">createWatcher</span><span class="hl-1">(</span><span class="hl-0">observable</span><span class="hl-1">);</span>
+</code></pre>
+<p>Use it in your LitElements:</p>
+<pre><code class="language-ts"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-0">html</span><span class="hl-1">, </span><span class="hl-0">LitElement</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-7">&#39;lit-watch&#39;</span><span class="hl-1">;</span><br/><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-0">watch</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-7">&#39;./watch&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-3">export</span><span class="hl-1"> </span><span class="hl-4">class</span><span class="hl-1"> </span><span class="hl-8">Account</span><span class="hl-1"> </span><span class="hl-4">extends</span><span class="hl-1"> </span><span class="hl-8">LitElement</span><span class="hl-1"> {</span><br/><span class="hl-1">    @</span><span class="hl-6">watch</span><span class="hl-1">((</span><span class="hl-0">state</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-0">state</span><span class="hl-1">.</span><span class="hl-0">user</span><span class="hl-1">.</span><span class="hl-0">fullName</span><span class="hl-1">)</span><br/><span class="hl-1">    </span><span class="hl-4">public</span><span class="hl-1"> </span><span class="hl-0">user</span><span class="hl-1">!: </span><span class="hl-8">string</span><span class="hl-1">;</span><br/><br/><span class="hl-1">    </span><span class="hl-6">render</span><span class="hl-1">() {</span><br/><span class="hl-1">        </span><span class="hl-3">return</span><span class="hl-1"> </span><span class="hl-6">html</span><span class="hl-7">`</span><br/><span class="hl-7">            Signed in as </span><span class="hl-4">${</span><span class="hl-4">this</span><span class="hl-9">.</span><span class="hl-0">user</span><span class="hl-4">}</span><br/><span class="hl-7">        `</span><span class="hl-1">;</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">}</span>
+</code></pre>
+
+<a href="#note-use-public-do-not-use-private--protected" id="note-use-public-do-not-use-private--protected" style="color: inherit; text-decoration: none;">
+  <h4>NOTE: Use <code>public</code> (do not use <code>private</code> / <code>protected</code>)</h4>
+</a>
+<p>One of the goals of <code>lit-watch</code> was to force type-checking between the decorator output and the property. Due to a TypeScript limitation, however, the properties with a watching decorator have to be <code>public</code>. In a sense, from the scope of the decorator, we are accessing the class type from the outside,
+. Because any <code>private</code> or <code>protected</code> property will be invisible to the decorator, you may see a cryptic error when using these on any non-<code>public</code> properties.</p>
+
+<a href="#note-do-not-set-a-default-value" id="note-do-not-set-a-default-value" style="color: inherit; text-decoration: none;">
+  <h4>NOTE: Do not set a default value</h4>
+</a>
+<p>The decorator redefines the property with an accessor (<code>get</code>), so setting default values does not work. You can add a default in your select function by using a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator">nullish coalescing operator</a> (<code>??</code>).</p>
+<pre><code class="language-ts"><span class="hl-2">// Do</span><br/><span class="hl-1">@</span><span class="hl-6">watch</span><span class="hl-1">((</span><span class="hl-0">state</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-0">state</span><span class="hl-1">.</span><span class="hl-0">some</span><span class="hl-1">)</span><br/><span class="hl-0">public</span><span class="hl-1"> </span><span class="hl-0">some</span><span class="hl-1">!: </span><span class="hl-0">string</span><span class="hl-1">;</span><br/><br/><span class="hl-2">// Do not</span><br/><span class="hl-1">@</span><span class="hl-6">watch</span><span class="hl-1">((</span><span class="hl-0">state</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-0">state</span><span class="hl-1">.</span><span class="hl-0">some</span><span class="hl-1">)</span><br/><span class="hl-0">public</span><span class="hl-1"> </span><span class="hl-10">some</span><span class="hl-1">: </span><span class="hl-0">string</span><span class="hl-1"> = </span><span class="hl-7">&#39;default value&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-2">// For defaults</span><br/><span class="hl-1">@</span><span class="hl-6">watch</span><span class="hl-1">((</span><span class="hl-0">state</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-0">state</span><span class="hl-1">.</span><span class="hl-0">some</span><span class="hl-1"> ?? </span><span class="hl-7">&#39;default value&#39;</span><span class="hl-1">)</span><br/><span class="hl-0">public</span><span class="hl-1"> </span><span class="hl-0">some</span><span class="hl-1">!: </span><span class="hl-0">string</span><span class="hl-1">;</span>
+</code></pre>
+<p>By using <code>!</code>, we are letting TypeScript know that this value will be set, so we do not get any errors while using the <a href="https://www.typescriptlang.org/docs/handbook/2/classes.html#--strictpropertyinitialization"><code>--strictPropertyInitialization</code></a> option.</p>
+
+<a href="#note-do-not-use-before-connectedcallback" id="note-do-not-use-before-connectedcallback" style="color: inherit; text-decoration: none;">
+  <h4>NOTE: Do not use before <code>connectedCallback</code></h4>
+</a>
+<p>Do not use <code>lit-watch</code> values in your <code>constructor</code>, as value accessors are initialized and subscribed in the <code>connectedCallback</code> and will unsubscribe in the <code>disconnectedCallback</code>.</p>
+
+<a href="#creating-a-decorator-from-a-redux-store" id="creating-a-decorator-from-a-redux-store" style="color: inherit; text-decoration: none;">
+  <h3>Creating a decorator from a redux store</h3>
+</a>
+<p>Since <a href="https://github.com/reduxjs/redux/blob/1d1101a92b6476907728966aa9a2b3c8669d8ece/src/types/store.ts#L216..L222">redux is interoperable with observable/reactive libraries</a> you can watch redux stores like any other observable.</p>
+<p>Create the decorator from your redux store:</p>
+<pre><code class="language-ts"><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-0">createWatcher</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-7">&#39;lit-watch&#39;</span><span class="hl-1">;</span><br/><span class="hl-3">import</span><span class="hl-1"> { </span><span class="hl-0">store</span><span class="hl-1"> } </span><span class="hl-3">from</span><span class="hl-1"> </span><span class="hl-7">&#39;./store&#39;</span><span class="hl-1">;</span><br/><br/><span class="hl-2">// Create a @watch decorator</span><br/><span class="hl-3">export</span><span class="hl-1"> </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">watch</span><span class="hl-1"> = </span><span class="hl-6">createWatcher</span><span class="hl-1">(</span><span class="hl-0">store</span><span class="hl-1">);</span>
+</code></pre>
+
+<a href="#filtering-transforming-and-combining-data-with-reselect" id="filtering-transforming-and-combining-data-with-reselect" style="color: inherit; text-decoration: none;">
+  <h3>Filtering, transforming and combining data with reselect</h3>
+</a>
+<p>You can use <a href="https://redux-toolkit.js.org/api/createSelector">reselect</a>&#39;s <code>createSelector</code> to create complex queries.</p>
+<p>One of the benefits of using reselect over writing your own function is that reselect uses memoization to prevent unnecessary updates when the source data has not been changed.</p>
+<p>For more information about reselect, see <a href="https://github.com/reduxjs/reselect">the reselect docs</a>.</p>
+<p>The examples below show some inline use of reselect, but you are free to pass your selectors from elsewhere.</p>
+
+<a href="#filtering" id="filtering" style="color: inherit; text-decoration: none;">
+  <h4>Filtering</h4>
+</a>
+<pre><code class="language-ts"><span class="hl-1">@</span><span class="hl-6">watch</span><span class="hl-1">(</span><span class="hl-6">createSelector</span><span class="hl-1">(</span><br/><span class="hl-1">    (</span><span class="hl-0">state</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-0">state</span><span class="hl-1">.</span><span class="hl-0">messages</span><span class="hl-1">,</span><br/><span class="hl-1">    (</span><span class="hl-0">messages</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-2">// This only runs if state.messages changed</span><br/><span class="hl-1">        </span><span class="hl-3">return</span><span class="hl-1"> </span><span class="hl-0">messages</span><span class="hl-1">.</span><span class="hl-6">filter</span><span class="hl-1">((</span><span class="hl-0">item</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> !</span><span class="hl-0">item</span><span class="hl-1">.</span><span class="hl-0">read</span><span class="hl-1">);</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">))</span><br/><span class="hl-0">public</span><span class="hl-1"> </span><span class="hl-0">unread</span><span class="hl-1">!: </span><span class="hl-0">Message</span><span class="hl-1">[];</span>
+</code></pre>
+
+<a href="#transforming" id="transforming" style="color: inherit; text-decoration: none;">
+  <h4>Transforming</h4>
+</a>
+<pre><code class="language-ts"><span class="hl-1">@</span><span class="hl-6">watch</span><span class="hl-1">(</span><span class="hl-6">createSelector</span><span class="hl-1">(</span><br/><span class="hl-1">    (</span><span class="hl-0">state</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-0">state</span><span class="hl-1">.</span><span class="hl-0">cart</span><span class="hl-1">.</span><span class="hl-0">items</span><span class="hl-1">,</span><br/><span class="hl-1">    (</span><span class="hl-0">items</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-2">// This only runs if state.cart.items changed</span><br/><span class="hl-1">        </span><span class="hl-3">return</span><span class="hl-1"> </span><span class="hl-0">items</span><span class="hl-1">.</span><span class="hl-6">reduce</span><span class="hl-1">(</span><br/><span class="hl-1">            (</span><span class="hl-0">sum</span><span class="hl-1">, </span><span class="hl-0">item</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-0">sum</span><span class="hl-1"> + </span><span class="hl-0">item</span><span class="hl-1">.</span><span class="hl-0">price</span><span class="hl-1">,</span><br/><span class="hl-1">            </span><span class="hl-11">0</span><span class="hl-1">,</span><br/><span class="hl-1">        );</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">))</span><br/><span class="hl-0">public</span><span class="hl-1"> </span><span class="hl-0">total</span><span class="hl-1">!: </span><span class="hl-0">number</span><span class="hl-1">;</span>
+</code></pre>
+
+<a href="#combining" id="combining" style="color: inherit; text-decoration: none;">
+  <h4>Combining</h4>
+</a>
+<pre><code class="language-ts"><span class="hl-1">@</span><span class="hl-6">watch</span><span class="hl-1">(</span><span class="hl-6">createSelector</span><span class="hl-1">(</span><br/><span class="hl-1">    (</span><span class="hl-0">state</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-0">state</span><span class="hl-1">.</span><span class="hl-0">user</span><span class="hl-1">.</span><span class="hl-0">name</span><span class="hl-1">,</span><br/><span class="hl-1">    (</span><span class="hl-0">state</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-0">state</span><span class="hl-1">.</span><span class="hl-0">user</span><span class="hl-1">.</span><span class="hl-0">cart</span><span class="hl-1">.</span><span class="hl-0">items</span><span class="hl-1">.</span><span class="hl-0">length</span><span class="hl-1">,</span><br/><span class="hl-1">    (</span><span class="hl-0">user</span><span class="hl-1">, </span><span class="hl-0">items</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> {</span><br/><span class="hl-1">        </span><span class="hl-2">// This only runs if either state.user.name, or</span><br/><span class="hl-1">        </span><span class="hl-2">// state.user.cart.items.length changed (or both)</span><br/><span class="hl-1">        </span><span class="hl-3">return</span><span class="hl-1"> </span><span class="hl-7">`</span><span class="hl-4">${</span><span class="hl-0">user</span><span class="hl-4">}</span><span class="hl-7"> has </span><span class="hl-4">${</span><span class="hl-0">items</span><span class="hl-4">}</span><span class="hl-7"> in their cart`</span><span class="hl-1">;</span><br/><span class="hl-1">    }</span><br/><span class="hl-1">))</span><br/><span class="hl-0">public</span><span class="hl-1"> </span><span class="hl-0">message</span><span class="hl-1">!: </span><span class="hl-0">string</span><span class="hl-1">;</span>
+</code></pre>
+
+<a href="#multiple-watchers" id="multiple-watchers" style="color: inherit; text-decoration: none;">
+  <h3>Multiple watchers</h3>
+</a>
+<p>If you are planning on watching multiple observables, or maybe even multiple stores, it might make sens to name your decorators something more descriptive.</p>
+<pre><code class="language-ts"><span class="hl-2">// @watchStore()</span><br/><span class="hl-3">export</span><span class="hl-1"> </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">watchStore</span><span class="hl-1"> = </span><span class="hl-6">createWatcher</span><span class="hl-1">(</span><span class="hl-0">store</span><span class="hl-1">);</span><br/><br/><span class="hl-2">// @watchMousePosition()</span><br/><span class="hl-3">export</span><span class="hl-1"> </span><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">watchPrice</span><span class="hl-1"> = </span><span class="hl-6">createWatcher</span><span class="hl-1">(</span><span class="hl-0">priceObservable</span><span class="hl-1">);</span>
+</code></pre>
+<pre><code class="language-ts"><span class="hl-3">export</span><span class="hl-1"> </span><span class="hl-4">class</span><span class="hl-1"> </span><span class="hl-8">Account</span><span class="hl-1"> </span><span class="hl-4">extends</span><span class="hl-1"> </span><span class="hl-8">LitElement</span><span class="hl-1"> {</span><br/><span class="hl-1">    @</span><span class="hl-6">watchStore</span><span class="hl-1">((</span><span class="hl-0">state</span><span class="hl-1">) </span><span class="hl-4">=&gt;</span><span class="hl-1"> </span><span class="hl-0">state</span><span class="hl-1">.</span><span class="hl-0">item</span><span class="hl-1">.</span><span class="hl-0">description</span><span class="hl-1">)</span><br/><span class="hl-1">    </span><span class="hl-4">public</span><span class="hl-1"> </span><span class="hl-0">description</span><span class="hl-1">!: </span><span class="hl-8">string</span><span class="hl-1">;</span><br/><br/><span class="hl-1">    @</span><span class="hl-6">watchPrice</span><span class="hl-1">()</span><br/><span class="hl-1">    </span><span class="hl-4">public</span><span class="hl-1"> </span><span class="hl-0">price</span><span class="hl-1">!: </span><span class="hl-8">number</span><span class="hl-1">;</span>
+</code></pre>
+
+<a href="#use-with-observables-and-rxjs" id="use-with-observables-and-rxjs" style="color: inherit; text-decoration: none;">
+  <h3>Use with Observables and RxJS</h3>
+</a>
+<p>You can create watchers from RxJS (and other) observables by passing them to <code>createWatcher</code>.</p>
+<pre><code class="language-ts"><span class="hl-4">const</span><span class="hl-1"> </span><span class="hl-5">watchClimate</span><span class="hl-1"> = </span><span class="hl-6">createWatcher</span><span class="hl-1">(</span><span class="hl-0">climateObservable</span><span class="hl-1">);</span>
+</code></pre>
+
+<a href="#license" id="license" style="color: inherit; text-decoration: none;">
+  <h2>License</h2>
+</a>
+<p><a href="https://github.com/gerarts/lit-watch/blob/master/LICENSE">MIT</a></p>
+<p>Made by <a href="https://github.com/gerarts">Paul Gerarts</a></p>
 </div></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">

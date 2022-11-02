@@ -103,6 +103,11 @@ export function createWatcher<O extends ObservableInput<any>>(observable: O) {
                     return;
                 }
 
+                // Clear thunk if one exists
+                if (thunk !== undefined) {
+                    thunk = undefined;
+                }
+
                 const nextValue = maybeSelector(value);
                 if (currentValue !== nextValue) {
                     // Keep previous value for requestUpdate('key', previousValue)
@@ -129,6 +134,21 @@ export function createWatcher<O extends ObservableInput<any>>(observable: O) {
                         thunk?.();
 
                         return currentValue;
+                    },
+                    set(value: ReturnType<F>) {
+                        console.warn(`[lit-watch] Blocked a write to a subscribed property`);
+                        console.log({
+                            object: (() => {
+                                try {
+                                    return target.constructor.name;
+                                } catch (_) {
+                                    return target;
+                                }
+                            })(),
+                            property: key,
+                            value,
+                            subscribedValue: currentValue,
+                        });
                     },
                 });
 
