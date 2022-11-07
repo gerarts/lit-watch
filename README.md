@@ -42,8 +42,8 @@ export class Account extends LitElement {
 
 #### NOTE: Use `public` (do not use `private` / `protected`)
 
-One of the goals of `lit-watch` was to force type-checking between the decorator output and the property. Due to a TypeScript limitation, however, the properties with a watching decorator have to be `public`. In a sense, from the scope of the decorator, we are accessing the class type from the outside,
-. Because any `private` or `protected` property will be invisible to the decorator, you may see a cryptic error when using these on any non-`public` properties.
+One of the goals of `lit-watch` was to force type-checking between the decorator output and the property. Due to a TypeScript limitation, however, the properties with a watching decorator have to be `public`. In a sense, from the scope of the decorator, we are accessing the class type from the outside.
+Because any `private` or `protected` property will be invisible to the decorator, you may see a cryptic error when using these on any non-`public` properties.
 
 #### NOTE: Do not set a default value
 
@@ -83,7 +83,7 @@ import { store } from './store';
 export const watch = createWatcher(store);
 ```
 
-### Filtering, transforming and combining data with reselect
+### Filtering, transforming, and combining data with reselect
 
 You can use [reselect](https://redux-toolkit.js.org/api/createSelector)'s `createSelector` to create complex queries.
 
@@ -139,7 +139,7 @@ public message!: string;
 
 ### Multiple watchers
 
-If you are planning on watching multiple observables, or maybe even multiple stores, it might make sens to name your decorators something more descriptive.
+If you are planning on watching multiple observables, or maybe even multiple stores, it might make sense to name your decorators something more descriptive.
 
 ```ts
 // @watchStore()
